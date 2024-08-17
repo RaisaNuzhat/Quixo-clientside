@@ -112,7 +112,7 @@ const Login = () => {
 
                             </div>
                             <div className="form-control mt-6">
-                                <button className="btn bg-[#f1b963] text-white">Log In</button>
+                                <button className="btn bg-[#53a8b6] text-white">Log In</button>
                             </div>
                             <div className="flex justify-center items-center">
                                 <Link to='/register' href="#" className="label-text-alt link link-hover my-3 font-medium text-[18px]">New Here? Register Here</Link>

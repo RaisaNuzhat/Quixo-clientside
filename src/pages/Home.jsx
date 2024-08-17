@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import axios from "axios";
 import { useState } from "react";
@@ -8,6 +9,10 @@ const Home = () => {
   const [itemsPerPage, setItemsPerPage] = useState(8)
   const [currentPage, setCurrentPage] = useState(1)
   const [count, setCount] = useState(0)
+  const [filter, setFilter] = useState('')
+  const [sort, setSort] = useState('')
+  const [search, setSearch] = useState('')
+  const [searchText, setSearchText] = useState('')
   
   const numberOfPages = Math.ceil(count / itemsPerPage)
   const pages = [...Array(numberOfPages).keys()].map(element => element + 1)
@@ -16,46 +21,63 @@ const Home = () => {
       console.log(value)
       setCurrentPage(value)
     }
+    const handleReset = () => {
+      setFilter('')
+      setSort('')
+      setSearch('')
+      setSearchText('')
+    }
+  
+    const handleSearch = e => {
+      e.preventDefault()
+      setSearch(searchText)
+    }
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await axios(`${import.meta.env.VITE_API_URL}/all-products?page=${currentPage}&size=${itemsPerPage}`)
+      const { data } = await axios(`${import.meta.env.VITE_API_URL}/all-products?page=${currentPage}&size=${itemsPerPage}&filter=${filter}&sort=${sort}&search=${search}`)
       setItem(data)   
     }
     getData()
-  }, [currentPage,itemsPerPage])
+  }, [currentPage,itemsPerPage,filter,search,sort])
   useEffect(() => {
     const getCount = async () => {
-      const { data } = await axios(`${import.meta.env.VITE_API_URL}/productcount`)
+      const { data } = await axios(`${import.meta.env.VITE_API_URL}/productcount?filter=${filter}&search=${search}`)
       setCount(data.count)
-      console.log(count)
+      //console.log(count)
     }
     getCount()
-  }, [])
+  }, [filter,search])
   return (
     <div className="container mx-auto flex flex-col justify-center items-center my-10">
       <h3 className="text-center font-semibold my-10 lg:text-6xl text-3xl">Explore Our Products!</h3>
       <div className='flex flex-col md:flex-row justify-center items-center gap-5 my-16 '>
         <div>
           <select
+           onChange={e => {
+            setFilter(e.target.value)
+            setCurrentPage(1)
+          }}
+            value={filter}
             name='category'
             id='category'
             className='border p-4 rounded-lg'
           >
             <option value=''>Filter By Category</option>
-            <option value='Web Development'>Web Development</option>
-            <option value='Graphics Design'>Graphics Design</option>
-            <option value='Digital Marketing'>Digital Marketing</option>
+            <option value='Makeup'>Makeup</option>
+            <option value='Skincare'>Skincare</option>
           </select>
         </div>
-        <form>
+        <form onSubmit={handleSearch}>
           <div className='flex p-1 overflow-hidden border rounded-lg    focus-within:ring focus-within:ring-opacity-40 focus-within:border-blue-400 focus-within:ring-blue-300'>
             <input
               className='px-6 py-2 text-gray-700 placeholder-gray-500 bg-white outline-none focus:placeholder-transparent'
               type='text'
               name='search'
-              placeholder='Enter Job Title'
-              aria-label='Enter Job Title'
+              onChange={e => setSearchText(e.target.value)}
+              value={searchText}
+              placeholder='Enter product name'
+              aria-label='Enter product name'
             />
             <button className='px-1 md:px-4 py-3 text-sm font-medium tracking-wider text-gray-100 uppercase transition-colors duration-300 transform bg-[#79c2d0] rounded-md   focus:outline-none'>
               Search
@@ -64,16 +86,21 @@ const Home = () => {
         </form>
         <div>
           <select
-            name='category'
-            id='category'
+             onChange={e => {
+              setSort(e.target.value)
+              setCurrentPage(1)
+            }}
+            value={sort}
+            name='sort'
+            id='sort'
             className='border p-4 rounded-md'
           >
-            <option value=''>Sort By Deadline</option>
+            <option value=''>Sort By Price</option>
             <option value='dsc'>Descending Order</option>
             <option value='asc'>Ascending Order</option>
           </select>
         </div>
-        <button className='btn bg-[#79c2d0] text-white'>Reset</button>
+        <button onClick={handleReset} className='btn bg-[#79c2d0] text-white'>Reset</button>
       </div>
       <div className=" grid lg:grid-cols-2  grid-cols-1 gap-8 ">
         {
@@ -85,7 +112,10 @@ const Home = () => {
       </div>
       <div className="flex justify-center mt-12">
         {/* previous button */}
-        <button className='px-4 py-2 mx-1 text-gray-700 disabled:text-gray-500 capitalize bg-gray-200 rounded-md disabled:cursor-not-allowed disabled:hover:bg-gray-200 disabled:hover:text-gray-500 hover:bg-blue-500  hover:text-white'>
+        <button 
+        disabled={currentPage === 1}
+        onClick={() => handlePaginationButton(currentPage - 1)}
+        className='px-4 py-2 mx-1 text-white disabled:text-[#bbe4e9] capitalize bg-[#5585b5] rounded-md disabled:cursor-not-allowed disabled:hover:bg-gray-200 disabled:hover:text-gray-500 hover:bg-blue-500  hover:text-white'>
           <div className='flex items-center -mx-1'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
@@ -109,13 +139,18 @@ const Home = () => {
           <button
           onClick={() => handlePaginationButton(btnNum)}
           key={btnNum}
-            className={`hidden px-4 py-2 mx-1 transition-colors duration-300 transform  rounded-md sm:inline hover:bg-blue-500  hover:text-white`}
+          className={`hidden ${
+            currentPage === btnNum ? 'bg-[#5585b5] text-white' : ''
+          } px-4 py-2 mx-1 transition-colors duration-300 transform  rounded-md sm:inline hover:bg-[#5585b5]  hover:text-white`}
           >
             {btnNum}
           </button>
         ))}
         {/* next button */}
-        <button className='px-4 py-2 mx-1 text-gray-700 transition-colors duration-300 transform bg-gray-200 rounded-md hover:bg-blue-500 disabled:hover:bg-gray-200 disabled:hover:text-gray-500 hover:text-white disabled:cursor-not-allowed disabled:text-gray-500'>
+        <button
+           disabled={currentPage === numberOfPages}
+          onClick={() => handlePaginationButton(currentPage + 1)}
+         className='px-4 py-2 mx-1 text-white transition-colors duration-300 transform bg-[#5585b5] rounded-md hover:bg-blue-500 disabled:hover:bg-gray-200 disabled:hover:text-gray-500 hover:text-white disabled:cursor-not-allowed disabled:text-gray-500'>
           <div className='flex items-center -mx-1'>
             <span className='mx-1'>Next</span>
 

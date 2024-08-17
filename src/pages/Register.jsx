@@ -136,7 +136,7 @@ const Register = () => {
                             }
                         </div>
                         <div className="form-control mt-6">
-                            <button className="btn bg-[#f1b963]  text-white">Register</button>
+                            <button className="btn bg-[#53a8b6]  text-white">Register</button>
                         </div>
                     </form>
                     <div className='flex items-center justify-between mt-4'>
