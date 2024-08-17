@@ -5,15 +5,33 @@ import { useEffect } from "react";
 import ProductCard from "../components/ProductCard";
 const Home = () => {
   const [item, setItem] = useState([])
-  const pages = [...Array().keys()].map(element=> element+1)
+  const [itemsPerPage, setItemsPerPage] = useState(8)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [count, setCount] = useState(0)
+  
+  const numberOfPages = Math.ceil(count / itemsPerPage)
+  const pages = [...Array(numberOfPages).keys()].map(element => element + 1)
+    //  handle pagination button
+    const handlePaginationButton = value => {
+      console.log(value)
+      setCurrentPage(value)
+    }
+
   useEffect(() => {
     const getData = async () => {
-      const { data } = await axios(`${import.meta.env.VITE_API_URL}/products`)
-      setItem(data)
-      //console.log(item)
+      const { data } = await axios(`${import.meta.env.VITE_API_URL}/all-products?page=${currentPage}&size=${itemsPerPage}`)
+      setItem(data)   
     }
     getData()
-  }, [item])
+  }, [currentPage,itemsPerPage])
+  useEffect(() => {
+    const getCount = async () => {
+      const { data } = await axios(`${import.meta.env.VITE_API_URL}/productcount`)
+      setCount(data.count)
+      console.log(count)
+    }
+    getCount()
+  }, [])
   return (
     <div className="container mx-auto flex flex-col justify-center items-center my-10">
       <h3 className="text-center font-semibold my-10 lg:text-6xl text-3xl">Explore Our Products!</h3>
@@ -89,7 +107,8 @@ const Home = () => {
         {/* numbers */}
         {pages.map(btnNum => (
           <button
-            key={btnNum}
+          onClick={() => handlePaginationButton(btnNum)}
+          key={btnNum}
             className={`hidden px-4 py-2 mx-1 transition-colors duration-300 transform  rounded-md sm:inline hover:bg-blue-500  hover:text-white`}
           >
             {btnNum}

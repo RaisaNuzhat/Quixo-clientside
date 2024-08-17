@@ -14,8 +14,12 @@ const ProductCard = ({item}) => {
                         className="rounded-xl w-[304px] h-[304px]" />
                 </figure>
                 <div className="card-body items-center text-center">
-                    <h2 className="card-title">{Product_Name}</h2>
-                    <p>If a dog chews shoes whose shoes does he choose?</p>
+                    <h2 className="card-title text-xl">{Product_Name}</h2>
+                    <p className="font-medium text-[16px]">Product Detail: {Description}</p>
+                    <p className="">Category: {Category}</p>
+                    <p>Price: {Price}</p>
+                    <p>Review: {Ratings}</p>
+                    <p>Manufacturing Date: {Product_Creation_date_and_time}</p>
                     <div className="card-actions">
                         <button className="btn bg-[#53a8b6] text-white p-3">Buy Now</button>
                     </div>
