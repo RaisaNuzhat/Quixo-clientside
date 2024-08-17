@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import ProductCard from "../components/ProductCard";
 const Home = () => {
   const [item, setItem] = useState([])
-  const pages = [1, 2, 3, 4, 5]
+  const pages = [...Array().keys()].map(element=> element+1)
   useEffect(() => {
     const getData = async () => {
       const { data } = await axios(`${import.meta.env.VITE_API_URL}/products`)
