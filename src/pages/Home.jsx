@@ -44,7 +44,7 @@ const Home = () => {
     const getCount = async () => {
       const { data } = await axios(`${import.meta.env.VITE_API_URL}/productcount?filter=${filter}&search=${search}`)
       setCount(data.count)
-      //console.log(count)
+      console.log(filter)
     }
     getCount()
   }, [filter,search])
